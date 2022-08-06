@@ -1,6 +1,6 @@
 from tkinter import * # * importa tudo
 from tkinter import ttk
-
+import sqlite3
 
 window1 = Tk()
 
@@ -11,6 +11,27 @@ class Funcs():
         self.phone_entry.delete(0, END)
         self.city_entry.delete(0, END)
 
+    def connect_db(self):
+        self.conn = sqlite3.connect("clients.db")
+        self.cursor = self.conn.cursor(); print("Conectando ao banco de dados")
+
+    def disconnect_db(self):
+        self.conn.close(); print("Banco de dados desconectado com sucesso")
+
+    def mount_tables(self):
+        self.connect_db()
+        # this print is to show in terminal the beginning when connecting
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS clientes (
+            cod INTEGER PRIMARY KEY,
+            nome_cliente CHAR(40) NOT NULL,
+            celular INTEGER(20),
+            cidade CHAR(40)
+            );
+        """)
+        self.conn.commit(); print("Banco de dados criado")
+        self.disconnect_db
+
 class Aplication(Funcs): # it can use function Funcs in Aplication
     def __init__(self):
         self.window1 = window1  # Mentioning the window inside the class
@@ -18,6 +39,7 @@ class Aplication(Funcs): # it can use function Funcs in Aplication
         self.screen_frames() # call the function to insert a frame in the window
         self.widgets_frame1()
         self.list_frame2()
+        self.mount_tables() # call the database and mount the table if it not exists
         window1.mainloop() # insert an infinite loop to show the window
     
     def screen(self):
@@ -25,7 +47,7 @@ class Aplication(Funcs): # it can use function Funcs in Aplication
         self.window1.configure(background="darkgreen") # choose the background. Better with hexadecimal
         self.window1.geometry('600x500') # defines the size of the window
         self.window1.resizable(True, True) # False: you can't change the size of the window
-        self.window1.maxsize(width=900, height=700) # maximum size to stretch, even with the fullscreen mode
+        self.window1.maxsize(width=900, height=700) # maximum size to stretch, even in the fullscreen mode
         self.window1.minsize(width=600, height=500) # minimum size to stretch
 
     def screen_frames(self):
