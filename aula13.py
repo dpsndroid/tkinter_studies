@@ -1,8 +1,46 @@
 from tkinter import * # * importa tudo
 from tkinter import ttk
 import sqlite3
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.platypus import SimpleDocTemplate, Image
+import webbrowser
 
 window1 = Tk()
+
+class Reports(): # creates a pdf report on the webbrowser
+    def print_client(self):
+        webbrowser.open("client.pdf")
+
+    def gen_rep(self):
+        self.c = canvas.Canvas("client.pdf")
+        self.coderep = self.code_entry.get()
+        self.namerep = self.name_entry.get()
+        self.phonerep = self.phone_entry.get()
+        self.cityrep = self.city_entry.get()
+
+        self.c.setFont("Helvetica-Bold", 20)
+        self.c.drawString(200, 770, "FICHA DO CLIENTE") # position
+
+        self.c.setFont("Helvetica", 10)
+        self.c.drawString(50, 700, "Código: ")
+        self.c.drawString(50, 650, "Nome: ")
+        self.c.drawString(50, 600, "Telefone: ")
+        self.c.drawString(50, 550, "Cidade: ")
+
+        self.c.setFont("Helvetica", 10)
+        self.c.drawString(100, 700, self.coderep)
+        self.c.drawString(100, 650, self.namerep)
+        self.c.drawString(100, 600, self.phonerep)
+        self.c.drawString(100, 550, self.cityrep)
+
+        self.c.rect(20, 400, 550, 420, fill=False, stroke=True)
+
+        self.c.showPage()
+        self.c.save()
+        self.print_client()
 
 class Funcs():
     def clean_screen(self):
@@ -32,11 +70,14 @@ class Funcs():
         self.conn.commit(); print("Banco de dados criado")
         self.disconnect_db
 
-    def add_client(self): # to receive the entries
+    def variables(self):
         self.code = self.code_entry.get()
         self.name = self.name_entry.get()
         self.phone = self.phone_entry.get()
         self.city = self.city_entry.get()
+
+    def add_client(self): # to receive the entries
+        self.variables()
         self.connect_db() # to call the sql
 
         self.cursor.execute(""" INSERT INTO clients (nome_cliente, telefone, cidade)
@@ -54,8 +95,35 @@ class Funcs():
             self.ListCli.insert("", END, values=i)
         self.disconnect_db()
 
+    def double_click(self, event): # event is to inform that an event will occur
+        self.clean_screen()
+        self.ListCli.selection()
+        for n in self.ListCli.selection():
+            col1, col2, col3, col4 = self.ListCli.item(n, "values")
+            self.code_entry.insert(END, col1)
+            self.name_entry.insert(END, col2)
+            self.phone_entry.insert(END, col3)
+            self.city_entry.insert(END, col4)
 
-class Aplication(Funcs): # it can use function Funcs in Aplication
+    def del_client(self):
+        self.variables()
+        self.connect_db()
+        self.cursor.execute(""" DELETE FROM clients WHERE cod = ? """, (self.code))
+        self.conn.commit()
+        self.disconnect_db()
+        self.clean_screen()
+        self.select_list()
+
+    def change_client(self):
+        self.variables()
+        self.connect_db()
+        self.cursor.execute(""" UPDATE clients SET nome_cliente = ?, telefone = ?, cidade = ? WHERE cod = ? """, (self.name, self.phone, self.city, self.code))
+        self.conn.commit()
+        self.disconnect_db()
+        self.select_list()
+        self.clean_screen()
+
+class Aplication(Funcs, Reports): # it can use function Funcs in Aplication
     def __init__(self):
         self.window1 = window1  # Mentioning the window inside the class
         self.screen() # call the function screen in the class 
@@ -64,6 +132,7 @@ class Aplication(Funcs): # it can use function Funcs in Aplication
         self.list_frame2()
         self.mount_tables() # call the database and mount the table if it not exists
         self.select_list() # update the list in the database
+        self.menus()
         window1.mainloop() # insert an infinite loop to show the window
             
     def screen(self):
@@ -99,11 +168,11 @@ class Aplication(Funcs): # it can use function Funcs in Aplication
         
         self.bt_new.place(relx=0.58, rely=0.15, relwidth=0.1, relheight=0.15)  
 # button mudar
-        self.bt_change = Button(self.frame1, text="Mudar", bd=2, bg="lightgreen", fg="darkgreen", font= ("verdana", 10, "bold"))
+        self.bt_change = Button(self.frame1, text="Mudar", bd=2, bg="lightgreen", fg="darkgreen", font= ("verdana", 10, "bold"), command= self.change_client)
         
         self.bt_change.place(relx=0.70, rely=0.15, relwidth=0.1, relheight=0.15)  
 # button apagar
-        self.bt_erase = Button(self.frame1, text="Apagar", bd=2, bg="lightgreen", fg="darkgreen", font= ("verdana", 10, "bold"))
+        self.bt_erase = Button(self.frame1, text="Apagar", bd=2, bg="lightgreen", fg="darkgreen", font= ("verdana", 10, "bold"), command= self.del_client)
         
         self.bt_erase.place(relx=0.82, rely=0.15, relwidth=0.1, relheight=0.15)
 #---------------------------------------------------------------------------------
@@ -158,6 +227,26 @@ class Aplication(Funcs): # it can use function Funcs in Aplication
         self.scrollist = Scrollbar(self.frame2, orient="vertical")
         self.ListCli.configure(yscroll=self.scrollist.set)  # listCli constains the scrollbar
         self.scrollist.place(relx=0.96, rely=0.02, relwidth=0.04, relheight=0.05)
+        self.ListCli.bind("<Double-1>", self.double_click)
 
+    def menus(self):
+        menubar = Menu(self.window1)
+        self.window1.config(menu=menubar)
+        filemenu = Menu(menubar)
+        filemenu2 = Menu(menubar)
+        filemenu3 = Menu(menubar)
+
+        def quit():
+            self.window1.destroy()
+
+        menubar.add_cascade(label= "Opções", menu= filemenu)
+        filemenu.add_command(label = "Limpa tela", command=self.clean_screen)
+        filemenu.add_command(label = "Sair", command= quit)
+
+        menubar.add_cascade(label = "Sobre", menu= filemenu2)
+        filemenu2.add_command(label = "Versão 1.0")
+
+        menubar.add_cascade(label= "Ficha do Cliente", menu=filemenu3)
+        filemenu3.add_command(label= "Gerar PDF", command= self.gen_rep)
 
 Aplication()

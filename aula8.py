@@ -22,10 +22,10 @@ class Funcs():
         self.connect_db()
         # this print is to show in terminal the beginning when connecting
         self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS clientes (
+            CREATE TABLE IF NOT EXISTS clients (
             cod INTEGER PRIMARY KEY,
-            nome_cliente CHAR(40) NOT NULL,
-            celular INTEGER(20),
+            nome CHAR(40) NOT NULL,
+            telefone INTEGER(20),
             cidade CHAR(40)
             );
         """)
@@ -98,7 +98,7 @@ class Aplication(Funcs): # it can use function Funcs in Aplication
         
         self.name_entry.place(relx=0.05, rely=0.52, relwidth=0.88)
 #---------------------------------------------------------------------------------
-        self.lb_phone = Label(self.frame1, text="Celular", background="lightgrey", fg="darkgreen", font= ("verdana", 10, "bold"))
+        self.lb_phone = Label(self.frame1, text="Telefone", background="lightgrey", fg="darkgreen", font= ("verdana", 10, "bold"))
         
         self.lb_phone.place(relx=0.05, rely=0.69)
 
