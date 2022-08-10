@@ -6,6 +6,10 @@ class Funcs():
         self.name_entry.delete(0, END)
         self.phone_entry.delete(0, END)
         self.city_entry.delete(0, END)
+        self.city_entry.delete(0, END)
+        self.addr_entry.delete(0, END)
+        self.neig_entry.delete(0, END)
+        self.cep_entry.delete(0, END)
 
     def connect_db(self):
         self.conn = sqlite3.connect("clients.db")
@@ -67,6 +71,7 @@ class Funcs():
             self.name_entry.insert(END, col2)
             self.phone_entry.insert(END, col3)
             self.city_entry.insert(END, col4)
+        
 
     def del_client(self):
         self.variables()
