@@ -5,7 +5,7 @@ from tkinter.font import BOLD
 window1 = Tk()
 window1.geometry("800x600")
 window1.resizable(True, True)
-window1.title("Exercícios da Aula 40")
+window1.title("Exercícios da Aula 42")
 window1.configure(background="#483A58")
 window1.attributes("-alpha", 0.97)  # acrescenta alpha a janela
 
