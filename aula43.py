@@ -45,13 +45,13 @@ label3.place(relx=0.05, rely=0.65, relwidth=0.15, relheight=0.15)
 # Entries --------------------------
 
 Entry1 = Entry(frame1, font=("verdana", 12, "bold"))
-Entry1.place(relx=0.23, rely=0.35, relwidth=0.15, relheight=0.15)
+Entry1.place(relx=0.23, rely=0.37, relwidth=0.30, relheight=0.10)
 
 Entry2 = Entry(frame1, font=("verdana", 12, "bold"))
-Entry2.place(relx=0.23, rely=0.50, relwidth=0.15, relheight=0.15)
+Entry2.place(relx=0.23, rely=0.52, relwidth=0.30, relheight=0.10)
 
 Entry3 = Entry(frame1, font=("verdana", 12, "bold"))
-Entry3.place(relx=0.23, rely=0.65, relwidth=0.15, relheight=0.15)
+Entry3.place(relx=0.23, rely=0.67, relwidth=0.30, relheight=0.10)
 
 
 
